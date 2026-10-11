@@ -1,120 +1,90 @@
-![Jetcaster logo](./docs/logo.png)
+<img src="screenshots/jetchatlogo.png"/>
 
-# Jetcaster sample 🎙️
+# Jetchat sample
 
-Jetcaster is a sample podcast app, built with [Jetpack Compose][compose]. The goal of the sample is
-to showcase building with Compose across multiple form factors (mobile, TV, and Wear) and
-full-featured architecture. This sample also showcases Material Expressive elements.
+Jetchat is a sample chat app built with [Jetpack Compose][compose].
 
-Set your device to dark theme when trying out Jetcaster. This app features a dark theme as the
-primary theme of the app, since contextually media apps benefit greatly from dark themes. It also
-shows that contrast and expressive design can still be honored with dark themes.
-
-To try out this sample app, use the latest stable version of
-[Android Studio](https://developer.android.com/studio).
-You can clone this repository or import the project from Android Studio following the steps
+To try out this sample app, use the latest stable version
+of [Android Studio](https://developer.android.com/studio).
+You can clone this repository or import the
+project from Android Studio following the steps
 [here](https://developer.android.com/jetpack/compose/setup#sample).
+
+This sample showcases:
+
+* UI state management
+* Integration with Architecture Components: Navigation, Fragments, ViewModel
+* Back button handling
+* Text Input and focus management
+* Multiple types of animations and transitions
+* Saved state across configuration changes
+* Material Design 3 theming and Material You dynamic color
+* UI tests
 
 ## Screenshots
 
-<img src="../readme/jetcaster-hero.png"></img>
+<img src="screenshots/screenshots.png"/>
 
-## Phone app
+<img src="screenshots/widget.png" width="300"/>
 
-### Features
+<img src="screenshots/widget_discoverability.png" width="300"/>
 
-This sample has 3 components: the home screen, the podcast details screen, and the player screen
+### Status: 🚧 In progress
 
-The home screen is split into sub-screens for easy re-use:
+Jetchat is still in under development, and some features are not yet implemented.
 
-- __Home__, allowing the user to see their subscribed podcasts (top carousel), and navigate between 'Your Library' and 'Discover'
-- __Discover__, allowing the user to browse podcast categories
-- __Podcast Category__, allowing the user to see a list of recent episodes for podcasts in a given category.
+## Features
 
-Multiple panes will also be shown depending on the device's [window size class][wsc].
+### UI State management
+The [ConversationContent](app/src/main/java/com/example/compose/jetchat/conversation/Conversation.kt) composable is the entry point to this screen and takes a [ConversationUiState](app/src/main/java/com/example/compose/jetchat/conversation/ConversationUiState.kt) that defines the data to be displayed. This doesn't mean all the state is served from a single point: composables can have their own state too. For an example, see `scrollState` in [ConversationContent](app/src/main/java/com/example/compose/jetchat/conversation/Conversation.kt) or `currentInputSelector` in [UserInput](app/src/main/java/com/example/compose/jetchat/conversation/UserInput.kt)
 
-The player screen displays media controls and the currently "playing" podcast (the sample currently **does not** actually play any media—the behavior is simply mocked).
-The player screen layout is adapting to different form factors, including a tabletop layout on foldable devices:
+### Architecture Components
+The [ProfileFragment](app/src/main/java/com/example/compose/jetchat/profile/ProfileFragment.kt) shows how to pass data between fragments with the [Navigation component](https://developer.android.com/guide/navigation) and observe state from a
+[ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel), served via [LiveData](https://developer.android.com/topic/libraries/architecture/livedata).
 
-![readme_fold](https://github.com/android/compose-samples/assets/10263978/fe02248f-81ce-489b-a6d6-838438c8368e)
+### Back button handling
+When the Emoji selector is shown, pressing back in the app closes it, intercepting any navigation events. The implementation can be found in [UserInput](app/src/main/java/com/example/compose/jetchat/conversation/UserInput.kt).
+
+### Text Input and focus management
+When the Emoji panel is shown the keyboard must be hidden and vice versa. This is achieved with a combination of the [FocusRequester](https://developer.android.com/reference/kotlin/androidx/compose/ui/focus/FocusRequester) and [onFocusChanged](https://developer.android.com/reference/kotlin/androidx/compose/ui/focus/package-summary#(androidx.compose.ui.Modifier).onFocusChanged(kotlin.Function1)) APIs.
+
+### Multiple types of animations and transitions
+This sample uses animations ranging from simple `AnimatedVisibility` in [FunctionalityNotAvailablePanel](app/src/main/java/com/example/compose/jetchat/conversation/UserInput.kt) to choreographed transitions found in the [FloatingActionButton](https://material.io/develop/android/components/floating-action-button) of the Profile screen and implemented in [AnimatingFabContent](app/src/main/java/com/example/compose/jetchat/conversation/UserInput.kt)
+
+### Edge-to-edge UI with synchronized IME transitions
+This sample is laid out [edge-to-edge](https://medium.com/androiddevelopers/gesture-navigation-going-edge-to-edge-812f62e4e83e), drawing its content behind the system bars for a more immersive look.
+
+The sample also supports synchronized IME transitions when running on API 30+ devices. See the use of `Modifier.navigationBarsPadding().imePadding()` in [ConversationContent](app/src/main/java/com/example/compose/jetchat/conversation/UserInput.kt).
+
+### Saved state across configuration changes
+Some composable state survives activity or process recreation, like `currentInputSelector` in [UserInput](app/src/main/java/com/example/compose/jetchat/conversation/UserInput.kt).
+
+### Material Design 3 theming and Material You dynamic color
+Jetchat follows the [Material Design 3](https://m3.material.io) principles and uses the `MaterialTheme` composable and M3 components. On Android 12+ Jetchat supports Material You dynamic color, which extracts a custom color scheme from the device wallpaper. Jetchat uses a custom, branded color scheme as a fallback. It also implements custom typography using the Karla and Montserrat font families.
+
+### Nested scrolling interop
+Jetchat contains an example of how to use [`rememberNestedScrollInteropConnection()`](https://developer.android.com/reference/kotlin/androidx/compose/ui/platform/package-summary#rememberNestedScrollInteropConnection()) to achieve successful nested scroll interop between a View parent that implements `androidx.core.view.NestedScrollingParent3` and a Compose child. The example used here is a combination of a View parent `CoordinatorLayout` and a nested, Compose child `BoxWithConstraints` in [ProfileFragment](app/src/main/java/com/example/compose/jetchat/profile/ProfileFragment.kt). 
+
+### UI tests
+In [androidTest](app/src/androidTest/java/com/example/compose/jetchat) you'll find a suite of UI tests that showcase interesting patterns in Compose:
+
+#### [ConversationTest](app/src/androidTest/java/com/example/compose/jetchat/ConversationTest.kt)
+UI tests for the Conversation screen. Includes a test that checks the behavior of the app when dark mode changes.
+
+#### [NavigationTest](app/src/androidTest/java/com/example/compose/jetchat/NavigationTest.kt)
+Shows how to write tests that assert directly on the [Navigation Controller](https://developer.android.com/reference/androidx/navigation/NavController).
+
+#### [UserInputTest](app/src/androidTest/java/com/example/compose/jetchat/UserInputTest.kt)
+Checks that the user input composable, including extended controls, behave as expected showing and hiding the keyboard.
 
 
-### Others
-Some other notable things which are implemented:
+## Known issues
+1. If the emoji selector is shown, clicking on the TextField can sometimes show both input methods.
+Tracked in https://issuetracker.google.com/164859446
 
-* Images are all provided from each podcast's RSS feed, and loaded using [Coil][coil] library.
-
-### Architecture
-The app is built in a Redux-style, where each UI 'screen' has its own [ViewModel][viewmodel], which exposes a single [StateFlow][stateflow] containing the entire view state. Each [ViewModel][viewmodel] is responsible for subscribing to any data streams required for the view, as well as exposing functions which allow the UI to send events.
-
-Using the example of the home screen in the [`com.example.jetcaster.ui.home`](mobile/src/main/java/com/example/jetcaster/ui/home) package:
-
- - The ViewModel is implemented as [`HomeViewModel`][homevm], which exposes a `StateFlow<HomeViewState>` for the UI to observe.
- - [`HomeViewState`][homevm] contains the complete view state for the home screen as an [`@Immutable`](https://developer.android.com/reference/kotlin/androidx/compose/runtime/Immutable) `data class`.
- - The Home Compose UI in [`Home.kt`][homeui] uses [`HomeViewModel`][homevm], and observes it's [`HomeViewState`][homevm] as Compose [State](https://developer.android.com/reference/kotlin/androidx/compose/runtime/State), using [`collectAsStateWithLifecycle()`](https://developer.android.com/reference/kotlin/androidx/lifecycle/compose/package-summary#(kotlinx.coroutines.flow.StateFlow).collectAsStateWithLifecycle(androidx.lifecycle.LifecycleOwner,androidx.lifecycle.Lifecycle.State,kotlin.coroutines.CoroutineContext)):
-
-``` kotlin
-val viewModel: HomeViewModel = viewModel()
-val viewState by viewModel.state.collectAsStateWithLifecycle()
-```
-
-This pattern is used across the different screens:
-
-- __Home:__ [`com.example.jetcaster.ui.home`](mobile/src/main/java/com/example/jetcaster/ui/home)
-- __Discover:__ [`com.example.jetcaster.ui.home.discover`](mobile/src/main/java/com/example/jetcaster/ui/home/discover)
-- __Podcast Category:__ [`com.example.jetcaster.ui.category`](mobile/src/main/java/com/example/jetcaster/ui/home/category)
-
-## Wear
-
-This sample showcases a 2-screen pager which allows navigation between the Player and the Library.
-From the Library, users can access latest episodes from subscribed podcasts, and queue.
-From the podcast, users can access episode details and add episodes to the queue.
-From the Player screen, users can access a volume screen and a playback speed screen.
-
-The sample implements [Wear UX best practices for media apps][mediappsbestpractices], such as:
-- Support rotating side button (RSB) and Bezel for scrollable screens
-- Display scrollbar on scrolling
-- Display the time on top of the screens
-
-The sample is built using the [Media Toolkit][mediatoolkit] which is an open source
-project part of [Horologist][horologist] to ease the development of media apps on Wear OS built on top of Compose for Wear.
-It provides ready to use UI screens, such the [EntityScreen][entityscreen]
-that is used in this sample to implement many screens such as Podcast, LatestEpisodes and Queue. [Horologist][horologist] also provides
-a VolumeScreen that can be reused by media apps to conveniently control volume either by interacting with the rotating side button(RSB)/Bezel or by
-using the provided buttons.
-For simplicity, this sample uses a mock Player which is reused across form factors,
-if you want to see an advanced Media sample built on Compose that uses Exoplayer and plays media content,
-refer to the [Media Toolkit sample][mediatoolkitsample].
-
-The [official media app guidance for Wear OS][wearmediaguidance]
-recommends downloading content onto the watch before listening to preserve power, this feature will be added to this sample in future iterations. You can
-refer to the [Media Toolkit sample][mediatoolkitsample] to learn how to implement the media download feature.
-
-### Architecture
-The architecture of the Wear app is similar to the phone app architecture: each UI 'screen' has its 
-own [ViewModel][viewmodel] which exposes a `StateFlow<ScreenState>` for the UI to observe.
-
-## Data
-
-### Podcast data
-
-The podcast data in this sample is dynamically fetched from a number of podcast RSS feeds, which are listed in [`Feeds.kt`](core/data/src/main/java/com/example/jetcaster/core/data/network/Feeds.kt).
-
-The [`PodcastRepository`][podcastrepo] class is responsible for handling the data fetching of all podcast information:
-
- - Each podcast is fetched using [OkHttp][okhttp], and then parsed using [Rome][rome], within [`PodcastFetcher`][fetcher].
- - The parsed entities are then added to the local data stores: [`PodcastStore`][podcaststore], [`EpisodeStore`][epstore] &  [`CategoryStore`][catstore] for storage in the local [Room][room] [`JetcasterDatabase`][db] database.
-
- ### Follow podcasts
-
- The sample allows users to 'follow' podcasts, which is implemented within the data layer in the [`PodcastFollowedEntry`](core/data/src/main/java/com/example/jetcaster/core/data/database/model/PodcastFollowedEntry.kt) entity class, and as functions in [PodcastStore][podcaststore]: `followPodcast()`, `unfollowPodcast()`.
-
- ### Date + time
-
- The sample uses the JDK 8 [date and time APIs](https://developer.android.com/reference/java/time/package-summary) through the [desugaring support][jdk8desugar] available in Android Gradle Plugin 4.0+. Relevant Room [`TypeConverters`](https://developer.android.com/reference/kotlin/androidx/room/TypeConverters) are implemented in [`DateTimeTypeConverters.kt`](core/data/src/main/java/com/example/jetcaster/core/data/database/DateTimeTypeConverters.kt).
+2. There are only two profiles, clicking on anybody except "me" will show the same data.
 
 ## License
-
 ```
 Copyright 2020 The Android Open Source Project
 
@@ -131,29 +101,4 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
- [feeds]: mobile/src/main/java/com/example/jetcaster/data/Feeds.kt
- [fetcher]: mobile/src/main/java/com/example/jetcaster/data/PodcastFetcher.kt
- [podcastrepo]: mobile/src/main/java/com/example/jetcaster/data/PodcastsRepository.kt
- [podcaststore]: mobile/src/main/java/com/example/jetcaster/data/PodcastStore.kt
- [epstore]: mobile/src/main/java/com/example/jetcaster/data/EpisodeStore.kt
- [catstore]: mobile/src/main/java/com/example/jetcaster/data/CategoryStore.kt
- [db]: mobile/src/main/java/com/example/jetcaster/data/room/JetcasterDatabase.kt
- [glance]: https://developer.android.com/develop/ui/compose/glance
- [homevm]: mobile/src/main/java/com/example/jetcaster/ui/home/HomeViewModel.kt
- [homeui]: mobile/src/main/java/com/example/jetcaster/ui/home/Home.kt
- [compose]: https://developer.android.com/jetpack/compose
- [palette]: https://developer.android.com/reference/kotlin/androidx/palette/graphics/package-summary
- [room]: https://developer.android.com/topic/libraries/architecture/room
- [viewmodel]: https://developer.android.com/topic/libraries/architecture/viewmodel
- [stateflow]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/
- [okhttp]: https://square.github.io/okhttp/
- [rome]: https://rometools.github.io/rome/
- [jdk8desugar]: https://developer.android.com/studio/write/java8-support#library-desugaring
- [coil]: https://coil-kt.github.io/coil/
- [wsc]: https://developer.android.com/guide/topics/large-screens/support-different-screen-sizes#window_size_classes
- [mediatoolkit]: https://google.github.io/horologist/media-toolkit/
- [mediatoolkitsample]: https://google.github.io/horologist/media-sample/
- [wearmediaguidance]: https://developer.android.com/media/implement/surfaces/wear-os#play-downloaded-content
- [horologist]: https://google.github.io/horologist/
- [entityscreen]: https://github.com/google/horologist/blob/main/media/ui/src/main/java/com/google/android/horologist/media/ui/screens/entity/EntityScreen.kt
- [mediappsbestpractices]: https://developer.android.com/design/ui/wear/guides/foundations/media-apps
+[compose]: https://developer.android.com/jetpack/compose

@@ -34,16 +34,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "Jetcaster"
-include(
-    ":mobile",
-    ":core:data",
-    ":core:data-testing",
-    ":core:domain",
-    ":core:domain-testing",
-    ":core:designsystem",
-    ":tv",
-    ":wear",
-    ":glancewidget"
-)
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+rootProject.name = "Jetchat"
+include(":app")
+

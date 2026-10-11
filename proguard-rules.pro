@@ -23,22 +23,7 @@
 # Repackage classes into the top-level.
 -repackageclasses
 
-# Rome reflectively loads classes referenced in com/rometools/rome/rome.properties.
--adaptresourcefilecontents com/rometools/rome/rome.properties
--keep class * implements com.rometools.rome.feed.synd.Converter
--keep class * implements com.rometools.rome.io.ModuleParser
--keep class * implements com.rometools.rome.io.WireFeedParser
-
-# Disable warnings for missing classes from OkHttp.
--dontwarn org.conscrypt.ConscryptHostnameVerifier
-
-# Disable warnings for missing classes from JDOM.
--dontwarn org.jaxen.DefaultNavigator
--dontwarn org.jaxen.NamespaceContext
--dontwarn org.jaxen.VariableContext
-
 # This is generated automatically by the Android Gradle plugin.
--dontwarn org.slf4j.impl.StaticLoggerBinder
 -dontwarn org.bouncycastle.jsse.BCSSLParameters
 -dontwarn org.bouncycastle.jsse.BCSSLSocket
 -dontwarn org.bouncycastle.jsse.provider.BouncyCastleJsseProvider
@@ -48,5 +33,6 @@
 -dontwarn org.openjsse.javax.net.ssl.SSLParameters
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
+
 
 -keep class androidx.compose.ui.platform.AndroidCompositionLocals_androidKt { *; }
